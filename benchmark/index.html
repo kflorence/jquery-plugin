@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <title>jQuery.plugin Benchmark</title>
+
+    <script language="javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/jquery.plugin.js"></script>
+    <script language="javascript" type="text/javascript">
+      jQuery(function($) {
+          var sum = 0,
+              outer_loops = 20,
+              inner_loops = 500;
+
+          for (var o = 0; o < outer_loops; o++) {
+              var start = Date.now();
+
+              for (var i = 0; i < inner_loops; i++) {
+                  // Set up
+                  $.plugin("plugin" + i, {
+                      _init: function(options) {}
+                  });
+
+                  // Instantiate
+                  $("#test")["plugin" + i]();
+              }
+
+              var end = Date.now(),
+                  time = (end - start);
+
+              sum += time;
+          };
+
+          $("#results").text(
+              "Creating " + inner_loops +
+              " instances " + outer_loops +
+              " times gave us an average speed of " +
+              (sum / outer_loops) + "ms"
+          );
+      });
+    </script>
+  </head>
+  <body>
+    <div id="results">calculating...</div>
+  </body>
+</html>

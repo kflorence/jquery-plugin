@@ -11,7 +11,7 @@
               inner_loops = 500;
 
           for (var o = 0; o < outer_loops; o++) {
-              var start = Date.now();
+              var start = +new Date();
 
               for (var i = 0; i < inner_loops; i++) {
                   // Set up
@@ -23,10 +23,10 @@
                   $("#test")["plugin" + i]();
               }
 
-              var end = Date.now(),
-                  time = (end - start);
+              var end = +new Date(),
+                  elapsed = (end - start);
 
-              sum += time;
+              sum += elapsed;
           };
 
           $("#results").text(

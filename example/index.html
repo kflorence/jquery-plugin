@@ -3,23 +3,23 @@
     <title>jQuery.plugin Example</title>
 
     <script language="javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
-    <script language="javascript" type="text/javascript" src="../js/jquery.plugin.js"></script>
+    <script language="javascript" type="text/javascript" src="../src/jquery.plugin.js"></script>
     <script language="javascript" type="text/javascript">
       jQuery(function($) {
-          $.plugin("pluginName", {
-              options: {
-                  option: "default"
-              },
-              getOption: function() {
-                  return this.options.option;
-              }
-          });
+        $.plugin("pluginName", {
+          options: {
+            option: "default"
+          },
+          getOption: function() {
+            return this.options.option;
+          }
+        });
 
-          $("#element1").pluginName({option: "foo"});
-          $("#element1").text($("#element1").pluginName("getOption")); // => "foo"
+        $("#element1").pluginName({option: "foo"});
+        $("#element1").text($("#element1").pluginName("getOption")); // => "foo"
 
-          $("#element2").pluginName({option: "bar"});
-          $("#element2").text($("#element2").pluginName("getOption")); // => "bar"
+        $("#element2").pluginName({option: "bar"});
+        $("#element2").text($("#element2").pluginName("getOption")); // => "bar"
       });
     </script>
   </head>

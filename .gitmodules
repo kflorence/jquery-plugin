@@ -1,6 +1,0 @@
-[submodule "spec/jasmine"]
-	path = spec/jasmine
-	url = git://github.com/pivotal/jasmine.git
-[submodule "spec/jasmine-jquery"]
-	path = spec/jasmine-jquery
-	url = git://github.com/velesin/jasmine-jquery.git

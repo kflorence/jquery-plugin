@@ -1,23 +1,30 @@
 describe("jQuery.plugin", function() {
   $.plugin("pluginName", {
     options: {
-      value: 0
+      foobar: "foobar"
+    },
+    _init: function(options) {
+      $.extend(this.options, options);
     },
     option: function(key, value) {
-      if (value) {
+      if (key) {
+        if (!value) {
+          return this.options[key];
+        }
+
         this.options[key] = value;
-        return this;
       }
 
-      return this.options[key];
+      return this;
     }
   });
 
-  it("should have a property 'value' which equals 1", function() {
+  it("should set this.options.foobar to 'foo.'", function() {
     setFixtures(sandbox({ id: "element1" }));
 
-    $("#element1").pluginName({ value: 1 });
+    // Set this.options.foobar = "foo"
+    $("#element1").pluginName({ foobar: "foo" });
 
-    expect($("#element1").pluginName("option", "value")).toEqual(1);
+    expect($("#element1").pluginName("option", "foobar")).toEqual("foo");
   });
 });

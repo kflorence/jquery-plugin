@@ -1,39 +1,51 @@
 <html>
   <head>
     <title>jQuery.plugin Benchmark</title>
+    <link rel="stylesheet" type="text/css" href="benchmark.css" />
 
     <script language="javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
     <script language="javascript" type="text/javascript" src="../src/jquery.plugin.js"></script>
+    <script language="javascript" type="text/javascript" src="jslitmus.js"></script>
     <script language="javascript" type="text/javascript">
       jQuery(function($) {
-        var sum = 0,
-          outer_loops = 20,
-          inner_loops = 500;
+        var $run = $("#run"),
+          $tests = $("#tests"),
+          $element = $("<div></div");
 
-        for (var o = 0; o < outer_loops; o++) {
-          var start = +new Date();
-
-          for (var i = 0; i < inner_loops; i++) {
-            $.plugin("plugin" + i, {});
-            $("#test")["plugin" + i]();
+        jslitmus.test("Creation and instatiation", function(count) {
+          while (count--) {
+            $.plugin("plugin" + count, {});
+            $element["plugin" + count]({});
           }
+        });
 
-          var end = +new Date(),
-            elapsed = (end - start);
+        jslitmus.on("complete", function(test) {
+          $run.removeAttr("disabled").text("Run");
+          $tests.append($("<li />").html(
+            '<span>"' + test.name + '"</span> finished with a frequency of <span>' +
+            jslitmus.unsupported.humanize(test.getHz()) + "hz</span> (" +
+            jslitmus.unsupported.humanize(test.count) + " cycles in " +
+            jslitmus.unsupported.humanize(test.time) + " seconds)"
+          ));
+        });
 
-          sum += elapsed;
-        };
-
-        $("#results").text(
-          "Creating " + inner_loops +
-          " instances " + outer_loops +
-          " times gave us an average speed of " +
-          (sum / outer_loops) + "ms"
-        );
+        $run.click(function() {
+          $tests.empty();
+          $(this).attr("disabled", true).text("Running...");
+          jslitmus.runAll();
+        });
       });
     </script>
   </head>
   <body>
-    <div id="results">calculating...</div>
+    <h1>jQuery.plugin Benchmark</h1>
+    <p>Benchmark tests are run with <a href="https://github.com/broofa/jslitmus">JSLitmus</a>.  Your browser may become
+    temporarily unresponsive while the tests run.</p>
+
+    <button id="run" type="button">Run</button>
+
+    <ul id="tests">
+      <li>Press "Run" to start tests</li>
+    </ul>
   </body>
 </html>

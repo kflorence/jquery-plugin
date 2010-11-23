@@ -1,0 +1,16 @@
+#tests {
+  margin: 10px 0;
+  padding: 10px;
+  list-style: none;
+  border-top: #ddd 3px solid;
+}
+
+#tests li {
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+#tests li span {
+  font-weight: bold;
+  font-style: italic;
+}

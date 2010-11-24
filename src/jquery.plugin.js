@@ -1,39 +1,33 @@
 (function($) {
-  $.plugin = function(name, base, prototype) {
-    if (!prototype) {
-      prototype = base;
-      base = $.plugin.base;
-    }
-
-    $.extend(true, base.prototype, prototype);
-
+  $.plugin = function(name, prototype) {
     $.fn[name] = function(options) {
       var result,
         method = typeof options === "string" ? options : "",
         args = Array.prototype.slice.call(arguments, method ? 1 : 0);
 
       this.each(function() {
-        var instance = $.data(this, name) || new base(name, this, args);
+        var instance = $.data(this, name);
 
-        if (method && method.charAt(0) !== "_" && $.isFunction(instance[method])) {
-          result = instance[method].apply(instance, args);
+        if (!instance) {
+          var init = $.plugin.defacto.constructor;
+
+          $.data(this, name, instance = $.extend(true, {}, prototype));
+
+          if ($.isFunction(instance[init])) {
+            instance[init].apply(instance, args);
+          }
         }
 
-        return result !== undefined;
+        if (method && method.charAt(0) !== "_" && $.isFunction(instance[method])) {
+          return (result = instance[method].apply(instance, args)) !== undefined;
+        }
       });
 
       return result !== undefined ? result : this;
     };
   };
 
-  $.plugin.base = function(name, element, args) {
-    if (arguments.length) {
-      $.data(element, name, this);
-      this._init.apply(this, args);
-    }
-  };
-
-  $.plugin.base.prototype = {
-    _init: function() {}
+  $.plugin.defacto = {
+    constructor: "_init"
   };
 })(jQuery);

@@ -9,14 +9,42 @@
     <script language="javascript" type="text/javascript">
       jQuery(function($) {
         var $run = $("#run"),
-          $tests = $("#tests"),
-          $element = $("<div></div");
+          $tests = $("#tests");
 
-        jslitmus.test("Creation and instatiation", function(count) {
+        jslitmus.test("Plugin creation", function(count) {
           while (count--) {
             $.plugin("plugin" + count, {});
-            $element["plugin" + count]({});
           }
+        });
+
+        jslitmus.test("Instatiation on element", function(count) {
+          var $e = $("<div />");
+
+          $.plugin("plugin", {});
+
+          while (count--) {
+            $e.plugin({});
+          }
+
+          $e.remove();
+        });
+
+        jslitmus.test("Method invocation", function(count) {
+          var $e = $("<div />");
+
+          $.plugin("plugin", {
+            addOne: function(x) {
+              return x++;
+            }
+          });
+
+          $e.plugin();
+
+          while (count--) {
+            $e.plugin("addOne", count);
+          }
+
+          $e.remove();
         });
 
         jslitmus.on("complete", function(test) {

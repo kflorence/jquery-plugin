@@ -57,12 +57,17 @@ of options with your own.
 Unlike jQuery.ui.widget, you can call a method on an element without initializing, using the default values given when
 the plugin was defined. If this is not desirable, simply initialize your plugin beforehand.
 
-    // initialize before method call
+    // Initialize before method call
     $("#someElement").pluginName({x: 1}); // extend options, overwrites matching keys
     $("#someElement").pluginName("someMethod", 1); // => 2
 
-    // method call without initialization
+    // Method call without initialization
     $("#someOtherElement").pluginName("someMethod", 1); // => 1
+
+Remember that in order to preserve chainability, your function should not have a return value.
+
+    // Chainable method call
+    $("#someElement").pluginName("someChainableMethod", 3).somethingElse(); // this.options.x => 4
 
 ## Requirements
 

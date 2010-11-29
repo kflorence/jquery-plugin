@@ -12,14 +12,57 @@ course, that your method returns something).
 ## Why not use jQuery.ui.widget?
 
 While much of this functionality can be found in the jQuery.ui.widget plugin, jQuery.ui.widget was obviously designed to 
-integrate into the jQuery.ui library. This brings with it unessesary functionality and overhead, not to mention the requirement
-of including the jQuery.ui library itself. With this in mind, jQuery.plugin was built for speed and flexibility and has
-been optimized for both minimal file size and maximum efficiency.
+integrate into the jQuery.ui library which brings with it unessesary functionality and overhead. With this in mind, the 
+jQuery.plugin was built for both speed and flexibility and has been optimized for minimal file size and maximum efficiency.
 
 ## When not to use this plugin
 
 This plugin is by no means a replacement for jQuery.ui.widget, and if you are already planning on using the jQuery.ui
 library, there is really no need to use this plugin.
+
+## Examples
+
+### Setting up your plugin
+
+To define your plugin, simply pass a name and object to the jQuery.plugin method. This will become the name of your
+plugin and will be stored in the jQuery.fn namespace. __Caution__: there are no checks in place to detect pre-existing
+functions. For this reason, it is possible to override jQuery core functions, which may or may not be what you intended.
+Always reference the jQuery API before settling on a plugin name.
+
+    // Defining your plugin
+    $.plugin("name", {...});
+
+You can define whatever you would like inside of the object (properties, methods... etc).
+
+    $.plugin("pluginName", {
+      options: {
+        x: 0
+      },
+      someMethod: function(x) {
+        return this.options.x + x;
+      },
+      someChainingMethod: function(x) {
+        this.options.x + x;
+      }
+    });
+
+### Using your plugin
+
+Now that you have defined your plugin, it is automatically available in the jQuery.fn namespace, meaning it can be
+chained to a jQuery element. Much like jQuery.ui.widget, jQuery.plugin allows method calls to your plugin by passing a
+string value as the first parameter.  If the first parameter to the plugin is not a string value, it is assumed that the
+plugin is being initialized.  By passing an object as the first parameter to the plugin, you can extend the default set
+of options with your own.
+
+Unlike jQuery.ui.widget, you can call a method on an element without initializing, using the default values given when
+the plugin was defined. If this is not desirable, simply initialize your plugin beforehand.
+
+    // initialize before method call
+    $("#someElement").pluginName({x: 1}); // extend options, overwrites matching keys
+    $("#someElement").pluginName("someMethod", 1); // => 2
+
+    // method call without initialization
+    $("#someOtherElement").pluginName("someMethod", 1); // => 1
 
 ## Requirements
 

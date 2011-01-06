@@ -1,12 +1,31 @@
 <html>
   <head>
-    <title>jQuery.plugin Example</title>
+    <title>jQuery.plugin Examples</title>
 
     <script language="javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
     <script language="javascript" type="text/javascript" src="../src/jquery.plugin.js"></script>
     <script language="javascript" type="text/javascript">
       jQuery(function($) {
-        $.plugin("pluginName", {
+        // Returns the ID of elements (not chainable)
+        $.plugin("getID", function() {
+          var ids = [];
+
+          this.each(function() {
+            ids.push("#" + $(this).attr("id"));
+          });
+
+          return ids.join(",");
+        });
+
+        // Sets the background color of elements (chainable)
+        $.plugin("setBGColor", function(options) {
+          this.each(function() {
+            $(this).css("background-color", options.color);
+          });
+        }, { color: "#EEEEEE" });
+
+        // Gets and sets options for an element
+        $.plugin("options", {
           options: {
             foobar: "foobar"
           },
@@ -23,21 +42,38 @@
           }
         });
 
-        $("#element1").pluginName({foobar: "foo"});
-        $("#element1").text('#element1 = {foobar: "' +
-          $("#element1").pluginName("option", "foobar") + '"}'); // => "foo"
+        $("#example1").text($("#example1").getID());
+        $("#example2").text($("#example2").getID());
 
-        $("#element2").pluginName();
-        $("#element2").text('#element2 = {foobar: "' + 
-            $("#element2").pluginName("option", "foobar") + '"}'); // => "foobar"
+        $("#example3").setBGColor({color: "#4183C4"});
+        $("#example4").setBGColor();
+
+        $("#example5").options({foobar: "foo"});
+        $("#example5").text($("#example5").options("option", "foobar"));
+        $("#example6").text($("#example6").options("option", "foobar"));
+
       });
     </script>
   </head>
   <body>
-    <h1>jQuery.plugin Example</h1>
+    <h1>jQuery.plugin Examples</h1>
+
+    <h2>Simple Plugin</h2>
+    <p>Returns the ID of the element.</p>
+
+    <div id="example1"></div>
+    <div id="example2"></div>
+
+    <h2>Simple Plugin (Chainable)</h2>
+    <p>Default options: {color: "#EEEEEE"}</p>
+
+    <div id="example3">#4183C4</div>
+    <div id="example4">#EEEEEE</div>
+
+    <h2>Psuedo-Class Plugin</h2>
     <p>Default options: {foobar: "foobar"}</p>
 
-    <div id="element1"></div>
-    <div id="element2"></div>
+    <div id="example5"></div>
+    <div id="example6"></div>
   </body>
 </html>

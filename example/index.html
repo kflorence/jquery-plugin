@@ -25,9 +25,12 @@
         }, { color: "#EEEEEE" });
 
         // Gets and sets options for an element
-        $.plugin("options", {
+        $.plugin("getSetOptions", {
           options: {
             foobar: "foobar"
+          },
+          getSetOptions: function(options) {
+            $(this.element).setBGColor();
           },
           option: function(key, value) {
             if (key) {
@@ -37,8 +40,6 @@
 
               this.options[key] = value;
             }
-
-            return this;
           }
         });
 
@@ -48,9 +49,9 @@
         $("#example3").setBGColor({color: "#4183C4"});
         $("#example4").setBGColor();
 
-        $("#example5").options({foobar: "foo"});
-        $("#example5").text($("#example5").options("option", "foobar"));
-        $("#example6").text($("#example6").options("option", "foobar"));
+        $("#example5").getSetOptions({foobar: "foo"}).text($("#example5").getSetOptions("option", "foobar"));
+        $("#example6").text($("#example6").getSetOptions("option", "foobar"));
+        $("#example6").getSetOptions("foo");
 
       });
     </script>

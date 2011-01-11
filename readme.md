@@ -59,7 +59,7 @@ You can define whatever you would like inside of the object (properties, methods
       }
     });
 
-Properties that are prefixed with an underscore ("_") will become psuedo-private and will only be accessible
+Properties that are prefixed with an underscore will become psuedo-private and will only be accessible
 from inside your plugin. If you define a function inside of your plugin called "_init" it will be invoked on
 initialization, right after the default options are merged with those that are passed in. This function will
 be given any arguments that are passed into the plugin on initialization, including any options that were

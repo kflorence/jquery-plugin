@@ -47,7 +47,10 @@ You can define whatever you would like inside of the object (properties, methods
         this.options.x++;
       },
       // public constructor function
-      pluginName: function() {},
+      pluginName: function() {
+        // make elements that invoke this plugin have a grey background
+        $(this.element).css("background-color", "#EEEEEE");
+      },
       someMethod: function(x) {
         return this.options.x + x;
       },
@@ -61,6 +64,10 @@ from inside your plugin. If you define a function inside of your plugin called "
 initialization, right after the default options are merged with those that are passed in. This function will
 be given any arguments that are passed into the plugin on initialization, including any options that were
 passed in.
+
+Inside of your plugin, you can refer to the element that called the plugin by referencing the value
+"this.element" (for object plugins). If your plugin was defined using a function, using "this" inside of the
+plugin will reference the invoking element.
 
 If your plugin contains a function with the same name as the plugin, it will be treated as a public
 constructor function. This function will be called anytime the plugin is invoked without calling another

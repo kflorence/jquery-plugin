@@ -4,7 +4,7 @@
  *
  * @author Kyle Florence
  * @website http://github.com/kflorence/jquery-plugin/
- * @version 0.2.0
+ * @version 0.2.1
  *
  * Based on jQuery.ui.widget - http://jqueryui.com
  *
@@ -37,6 +37,7 @@
       // Object cloning is definitely slower than prototypical inheritance,
       // but it lets us have unique instances within our objects.
       $.data(element, name, instance = $.extend(true, {
+        name: name,
         element: element,
         options: {}
       }, plugin));

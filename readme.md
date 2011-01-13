@@ -22,9 +22,7 @@ plugins up and running with common features already provided for you**.
 This plugin is by no means a replacement for jQuery.ui.widget. If you are already planning on using the jQuery.ui
 library for your plugin, there is really no need to use jQuery.plugin.
 
-## Examples
-
-### Setting up your plugin
+## Setting up your plugin
 
 To define your plugin, simply pass a name and **object or function** to the jQuery.plugin method. This will become the
 name of your plugin and will be stored in the jQuery.fn namespace. Optionally, you can pass a third argument
@@ -42,16 +40,20 @@ not be what you intended. Always reference the jQuery API before settling on a p
 You can define whatever you would like inside of the object (properties, methods... etc).
 
     $.plugin("pluginName", {
+      // These are the default options for the plugin, they can be overriden on
+      // initialization by passing in an object as the first argument
       options: {
         x: 0
       },
-      _init: function() {
-        this.options.x++;
-      },
-      // public constructor function
-      pluginName: function() {
-        // make elements that invoke this plugin have a grey background
+      // Private initialization function.
+      _initialize: function() {
+        // Anything in here will only be applied on initialization
         $(this.element).css("background-color", "#EEEEEE");
+      },
+      // Public constructor.
+      constructor: function() {
+        // Anything in here will be applied any time the public constructor is called
+        // ...
       },
       someMethod: function(x) {
         return this.options.x + x;
@@ -62,23 +64,26 @@ You can define whatever you would like inside of the object (properties, methods
     });
 
 Properties that are prefixed with an underscore will become psuedo-private and will only be accessible
-from inside your plugin. If you define a function inside of your plugin called __init_ it will be invoked on
-initialization, right after the default options are merged with those that are passed in. This function will
-be given any arguments that are passed into the plugin on initialization, including any options that were
-passed in.
+from inside your plugin. If you define a function inside of your plugin called __initialize_ it will be invoked on
+initialization with the arguments that were passed into the plugin on its first call.
 
-Inside of your plugin, you can refer to the element that called the plugin by referencing the value
-_this.element_ (for object plugins). If your plugin was defined using a function, using _this_ inside of the
-plugin will reference the invoking element. You can refer to the name of the plugin by referencing the value of
-_this.name_.
+If your plugin contains a function named _constructor_, it will be called anytime the plugin is invoked without
+calling another method (in other words, any time the first parameter is not a string). **NOTE**: The public
+constructor function is also called on initialization, right after the private initialization function and with
+the same arguments. You can also call your public constructor function at any time by passing the string
+"constructor", an empty string "", or passing non-string value as the first argument to the plugin.
 
-If your plugin contains a function with the same name as the plugin, it will be treated as a public
-constructor function. This function will be called anytime the plugin is invoked without calling another
-method (in other words, any time the first parameter is not a string). The public constructor function is also
-called on initialization, right after the private initialization function __init_ and with the same
-arguments. You can also call your public constructor function at any time like you would any other function.
+### Plugin properties
 
-### Using your plugin
+Inside of your plugin, you may refer to the current object instance by using the keyword "this" -- just as you would in
+any normal object/class environment. Upon initialization, several properties are automatically assigned to the instance:
+_name_, which contains the name of the plugin, _element_ which contains the element the plugin is currently being
+invoked on, _elements_ which contains all of the elements that were passed to the plugin on initialization, and
+_options_, which contain all of the options for the plugin (including those merged in). These properties are available
+to both object and function based plugins. **NOTE**: Unlike jQuery.ui.widget, the _element_ property contains a DOM
+element, not a jQuery element.  However, the value of _elements_ **is** of type jQuery.
+
+## Using your plugin
 
 Now that you have defined your plugin, it is automatically available in the jQuery.fn namespace, meaning it can be
 chained to a jQuery element. The options for your plugin are also automatically exposed publically as a property
@@ -88,7 +93,7 @@ sure you also bundle this plugin with yours, or at the very least link to its so
 
 Much like jQuery.ui.widget, jQuery.plugin allows method calls to your plugin by passing a string value as the
 first parameter.  If the first parameter to the plugin is not a string value and the plugin has not been initialized,
-the private initialization function __init_ will be invoked. If the plugin has already been initialized, the public
+the private initialization function __initialize_ will be invoked. If the plugin has already been initialized, the public
 constructor function will be called. By passing an object as the first parameter to the plugin, you can extend the
 default set of options with your own. This is done for you automatically on initialization, but on further calls to
 your public constructor you will have to handle the behavior yourself.
@@ -107,6 +112,11 @@ Remember that in order to preserve chainability, your function should not have a
 
     // Chainable method call (assuming x = 1)
     $("#someElement").pluginName("someChainingMethod", 3).somethingElse(); // this.options.x => 4
+
+Keep in mind that like any jQuery function that returns a value, **method calls will return the value of the first
+element in the set of matched elements**. This means that your method will only be invoked on that first element. This
+does not apply, however, to methods that have no return value, as jQuery.plugin will internally loop through each
+element and invoke your method on each one.
 
 ## Requirements
 

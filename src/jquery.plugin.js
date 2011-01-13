@@ -4,7 +4,7 @@
  *
  * @author Kyle Florence
  * @website http://github.com/kflorence/jquery-plugin/
- * @version 0.2.1
+ * @version 0.2.2
  *
  * Based on jQuery.ui.widget - http://jqueryui.com
  *
@@ -12,7 +12,7 @@
  * Dual licensed under the MIT and GPL Licenses.
  */
 
-;(function($) {
+;(function($, undefined) {
   var aps = Array.prototype.slice;
 
   /**
@@ -24,48 +24,7 @@
    *     plugin is an object, these can be passed into the object instead.
    */
   $.plugin = function(name, plugin, defaults) {
-    /**
-     * Our instance creation function. Putting it here makes initialization a
-     * little slower, but subsequent method calls inside of the plugin faster.
-     *
-     * @param {Element} element The element we are attaching the instance to.
-     * @param {Array} args The arguments to pass to the initialization function.
-     */
-    function create(element, args) {
-      var instance, options;
-
-      // Object cloning is definitely slower than prototypical inheritance,
-      // but it lets us have unique instances within our objects.
-      $.data(element, name, instance = $.extend(true, {
-        name: name,
-        element: element,
-        options: {}
-      }, plugin));
-
-      // Extend default options with those passed in
-      if (typeof (options = args[0]) === 'object') {
-        instance.options = $.extend(true, instance.options, $.fn[name].options, options);
-      }
-
-      // After the instance has been created, a private initialization function
-      // may be called (if it exists) with the arguments that were passed into
-      // the create function. This is the only time this function may be called.
-      if ($.isFunction(instance._init)) {
-        instance._init.apply(instance, args);
-      }
-
-      return instance;
-    }
-
-    /**
-     * Create a custom selector for the plugin. This makes it easy to
-     * check for elements of the plugin type within the DOM.
-     *
-     * @param element {jQuery} The jQuery element to test against.
-     */
-    $.expr[':'][name] = function(element) {
-      return !!$.data(element, name);
-    }
+    var pluginIsFunc = $.isFunction(plugin);
 
     /**
      * Create our plugin in the jQuery.fn namespace.
@@ -77,51 +36,71 @@
      * Any additional arguments will be passed directly to the method.
      */
     $.fn[name] = function(options) {
-      var result;
+      var result, elements = this,
+        isMethodCall = typeof options === "string" && options.length,
+        method = isMethodCall ? options : "constructor",
+        args = aps.call(arguments, isMethodCall ? 1 : 0);
 
-      // A plugin, in the simplest sense, could simply be a function.
-      if ($.isFunction(plugin)) {
-        var args = aps.call(arguments);
+      this.each(function() {
+        var instance = $.data(this, name) || create(this, elements, args);
 
-        // The result of the options merge will become the first argument
-        // passed into the plugin function call.
-        args.unshift($.extend(true, {}, $.fn[name].options, options));
+        // Maintain pseudo-private functions by denying access to any method
+        // that starts with an underscore.
+        if (method.charAt(0) !== "_" && $.isFunction(instance[method])) {
+          // Break the loop if we have a return value
+          return (result = instance[method].apply(instance, args)) === undefined;
+        }
+      });
 
-        // Note that unlike with "complex" plugins, simple plugins are
-        // called with "this" context equal to the element that invoked
-        // the plugin.
-        result = plugin.apply(this, args);
-      }
-
-      // If an object is passed, assume we are dealing with a psuedo-class
-      // structure (an object with properties and methods). jQuery.isPlainObject
-      // would be better here, but it restricts us to jQuery >= 1.4
-      else if (typeof plugin === 'object') {
-        var haveMethod = typeof options === 'string',
-          method = haveMethod ? options : name,
-          args = aps.call(arguments, haveMethod ? 1 : 0);
-
-        this.each(function() {
-          var instance = $.data(this, name) || create(this, args);
-
-          // Maintain pseudo-private functions by denying access to any method
-          // that starts with an underscore.
-          if (method.charAt(0) !== '_' && $.isFunction(instance[method])) {
-            return (result = instance[method].apply(instance, args)) !== undefined;
-          }
-        });
-      }
-
-      // In order to maintain chainability, we return a reference to the
-      // current element unless the result of the method call returns a
-      // non-undefined value.
+      // If there is no return value, return element set
       return result !== undefined ? result : this;
     }
 
     /**
      * Publicly expose the plugin's default options for global override
      */
-    $.fn[name].options = 'options' in plugin && typeof plugin.options === 'object'
-      ? plugin.options : (typeof defaults === 'object' ? defaults : {});
+    $.fn[name].options = typeof plugin.options === "object" ? plugin.options
+      : (typeof defaults === "object" ? defaults : {});
+
+    /**
+     * Create a custom selector for the plugin. This makes it easy to
+     * check for elements of the plugin type within the DOM.
+     *
+     * @param element {jQuery} The jQuery element to test against.
+     */
+    $.expr[":"][name] = function(element) {
+      return !!$.data(element, name);
+    }
+
+    /**
+     * Our instance creation function. Putting it here makes initialization a
+     * little slower, but subsequent method calls inside of the plugin faster.
+     *
+     * @param {Element} element The element we are attaching the instance to.
+     * @param {Array} args The arguments to pass to the initialization function.
+     */
+    function create(element, elements, args) {
+      var instance;
+
+      // Object cloning is definitely slower than prototypical inheritance,
+      // but it lets us have unique instances within our objects.
+      $.data(element, name, instance = $.extend({
+        name: name,
+        element: element,
+        elements: elements,
+        // Override default Object.prototype.constructor with undefined
+        // if the plugin is not a function, otherwise use plugin function
+        constructor: pluginIsFunc ? plugin : undefined
+      }, plugin, {
+        options: $.extend(true, {}, $.fn[name].options, args[0])
+      }));
+
+      // Private initialization function will be invoked here if it exists
+      if (instance._initialize && $.isFunction(instance._initialize)) {
+        instance._initialize.apply(instance, args);
+      }
+
+      return instance;
+    }
   }
 })(jQuery);

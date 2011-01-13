@@ -14,18 +14,17 @@ describe("jQuery.plugin", function() {
     }
   });
 
-  $.plugin("functionPlugin", function() {
-    return $(this).attr("id");
+  $.plugin("getID", function() {
+    return $(this.element).attr("id");
   });
 
-  $.plugin("withDefaultOptions", function(options) {
-    return options.valid;
+  $.plugin("isValid", function() {
+    return this.options.valid;
   }, { valid: true });
 
   it("should set this.options.foobar to 'foo.'", function() {
     setFixtures(sandbox({ id: "element1" }));
 
-    // Set this.options.foobar = "foo"
     $("#element1").pluginName({ foobar: "foo" });
 
     expect($("#element1").pluginName("option", "foobar")).toEqual("foo");
@@ -34,24 +33,24 @@ describe("jQuery.plugin", function() {
   it("should return id 'element2'", function() {
     setFixtures(sandbox({ id: "element2" }));
 
-    expect($("#element2").functionPlugin()).toEqual("element2");
+    expect($("#element2").getID()).toEqual("element2");
   });
 
   it("should have default public options", function() {
-    expect($.fn.withDefaultOptions.options.valid).toEqual(true);
+    expect($.fn.isValid.options.valid).toEqual(true);
   });
 
   it("should return options.valid = 'true'", function() {
     setFixtures(sandbox({ id: "element3" }));
 
-    expect($("#element3").withDefaultOptions()).toEqual(true);
+    expect($("#element3").isValid()).toEqual(true);
   });
 
   it("should return options.valid = 'false'", function() {
     setFixtures(sandbox({ id: "element4" }));
 
-    $.fn.withDefaultOptions.options.valid = false;
+    $.fn.isValid.options.valid = false;
 
-    expect($("#element4").withDefaultOptions()).toEqual(false);
+    expect($("#element4").isValid()).toEqual(false);
   });
 });

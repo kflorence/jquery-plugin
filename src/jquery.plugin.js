@@ -4,19 +4,18 @@
  *
  * @author Kyle Florence
  * @website http://github.com/kflorence/jquery-plugin/
- * @version 0.2.2
+ * @version 0.3.0
  *
  * Based on jQuery.ui.widget - http://jqueryui.com
  *
  * Copyright (c) 2011 Kyle Florence
  * Dual licensed under the MIT and GPL Licenses.
  **/
-
 ;(function( $, undefined ) {
   var aps = Array.prototype.slice;
 
   /**
-   * The jQuery.plugin plugin (has a nice ring to it doesn't it?)
+   * Plugin definition function.
    *
    * @param {String} name
    *    The name of the plugin to create.
@@ -30,6 +29,37 @@
     var pluginIsFunc = $.isFunction( plugin );
 
     /**
+     * Instance creation function.
+     *
+     * @param {Element} element
+     *    The element we are attaching the instance to.
+     * @param {Array} args
+     *    The arguments to pass to the initialization function.
+     **/
+    function create( element, elements, args ) {
+      var instance;
+
+      // Object cloning is definitely slower than prototypical inheritance,
+      // but it lets us have unique properties within our objects.
+      $.data( element, name, instance = $.extend({
+        // Override default Object.prototype.constructor with undefined
+        // if the plugin is not a function, otherwise use plugin function
+        constructor: pluginIsFunc ? plugin : undefined
+      }, $.plugin.base, plugin, {
+        name: name,
+        element: element,
+        elements: elements,
+        // Merged options will become first argument to subsequent method calls
+        options: args[ 0 ] = $.extend( true, {}, $.fn[ name ].options, args[ 0 ] )
+      }));
+
+      // Private initialization method
+      instance._initialize( instance, args );
+
+      return instance;
+    }
+
+    /**
      * Create our plugin in the jQuery.fn namespace.
      *
      * @param {String|Object} [options]
@@ -39,7 +69,7 @@
      *
      * Any additional arguments will be passed directly to the method.
      **/
-    $.fn[ name ] = function ( options ) {
+    $.fn[ name ] = function( options ) {
       var result, elements = this,
         isMethodCall = typeof options === "string" && options.length,
         method = isMethodCall ? options : "constructor",
@@ -58,7 +88,7 @@
 
       // If there is no return value, return element set
       return result !== undefined ? result : this;
-    }
+    };
 
     /**
      * Publicly expose the plugin's default options for global override
@@ -75,39 +105,13 @@
      **/
     $.expr[ ":" ][ name ] = function( element ) {
       return !!$.data( element, name );
-    }
+    };
+  };
 
-    /**
-     * Our instance creation function. Putting it here makes initialization a
-     * little slower, but subsequent method calls inside of the plugin faster.
-     *
-     * @param {Element} element
-     *    The element we are attaching the instance to.
-     * @param {Array} args
-     *    The arguments to pass to the initialization function.
-     **/
-    function create( element, elements, args ) {
-      var instance;
-
-      // Object cloning is definitely slower than prototypical inheritance,
-      // but it lets us have unique instances within our objects.
-      $.data( element, name, instance = $.extend({
-        name: name,
-        element: element,
-        elements: elements,
-        // Override default Object.prototype.constructor with undefined
-        // if the plugin is not a function, otherwise use plugin function
-        constructor: pluginIsFunc ? plugin : undefined
-      }, plugin, {
-        options: $.extend( true, {}, $.fn[ name ].options, args[ 0 ] )
-      }));
-
-      // Private initialization function will be invoked here if it exists
-      if ( instance._initialize && $.isFunction( instance._initialize ) ) {
-        instance._initialize.apply( instance, args );
-      }
-
-      return instance;
-    }
-  }
+  /**
+   * This is the public base prototype that all plugins inherit from.
+   **/
+  $.plugin.base = {
+    _initialize: function() {}
+  };
 })( jQuery );

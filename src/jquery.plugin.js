@@ -4,7 +4,7 @@
  *
  * @author Kyle Florence
  * @website http://github.com/kflorence/jquery-plugin/
- * @version 0.3.1
+ * @version 0.3.2
  *
  * Based on jQuery.ui.widget - http://jqueryui.com
  *
@@ -56,7 +56,7 @@
             typeof args[ 0 ] === "object" ? args[ 0 ] : {} )
       }));
 
-      instance._initialize( instance, args );
+      instance._initialize.apply( instance, args );
 
       return instance;
     }

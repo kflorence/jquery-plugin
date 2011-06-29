@@ -12,9 +12,8 @@
         });
 
         // Sets the background color of elements (chainable)
-        $.plugin("setBGColor", function() {
-          //console.log(this.options.color);
-          $(this.element).css("background-color", this.options.color);
+        $.plugin("setBGColor", function( o ) {
+          $(this.element).css("background-color", o.color);
         }, { color: "#EEEEEE" });
 
         // Gets and sets options for an element

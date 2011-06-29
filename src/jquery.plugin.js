@@ -4,7 +4,7 @@
  *
  * @author Kyle Florence
  * @website http://github.com/kflorence/jquery-plugin/
- * @version 0.3.0
+ * @version 0.3.1
  *
  * Based on jQuery.ui.widget - http://jqueryui.com
  *
@@ -42,6 +42,7 @@
       // Object cloning is definitely slower than prototypical inheritance,
       // but it lets us have unique properties within our objects.
       $.data( element, name, instance = $.extend({
+
         // Override default Object.prototype.constructor with undefined
         // if the plugin is not a function, otherwise use plugin function
         constructor: pluginIsFunc ? plugin : undefined
@@ -49,11 +50,12 @@
         name: name,
         element: element,
         elements: elements,
-        // Merged options will become first argument to subsequent method calls
-        options: args[ 0 ] = $.extend( true, {}, $.fn[ name ].options, args[ 0 ] )
+
+        // If arg[ 0 ] is object, merge it into default options
+        options: $.extend( true, {}, $.fn[ name ].options,
+            typeof args[ 0 ] === "object" ? args[ 0 ] : {} )
       }));
 
-      // Private initialization method
       instance._initialize( instance, args );
 
       return instance;

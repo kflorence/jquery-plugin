@@ -1,0 +1,35 @@
+{
+    "name": "jquery.plugin",
+    "version": "0.3.2",
+    "title": "jQuery.plugin()",
+    "author": {
+        "name": "Kyle Florence",
+        "url": "https://github.com/kflorence/"
+    },
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://raw.github.com/kflorence/jquery-plugin/master/license-mit"
+        },
+        {
+            "type": "GPL-2.0",
+            "url": "https://raw.github.com/kflorence/jquery-plugin/master/license-gpl"
+        }
+    ],
+    "dependencies": {
+        "jquery": ">=1.2.3"
+    },
+    "description": "jQuery.plugin is a lightweight jQuery plugin factory based on jQuery.ui.widget.",
+    "keywords": [
+        "plugin",
+        "lightweight",
+        "factory",
+        "meta",
+        "widget"
+    ],
+    "demo": "http://kflorence.github.com/jquery-plugin/",
+    "homepage": "https://github.com/kflorence/jquery-plugin",
+    "files": [
+        "dist/jquery.plugin.min.js"
+    ]
+}
